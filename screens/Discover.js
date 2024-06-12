@@ -1,21 +1,23 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Attractions, Avatar, Hotels, NotFound, Restaurants } from "../assets";
 import MenuContainer from "../components/MenuContainer";
 
 import { FontAwesome } from "@expo/vector-icons";
-import ItemCarDontainer from "../components/ItemCarDontainer";
 import { getPlacesData } from "../api";
+import ItemCarDontainer from "../components/ItemCarDontainer";
+import { auth } from '../components/firebaseSettings'; 
+import { signOut } from 'firebase/auth'; 
 
 const Discover = () => {
   const navigation = useNavigation();
@@ -27,6 +29,7 @@ const Discover = () => {
   const [bl_lng, setBl_lng] = useState(null);
   const [tr_lat, setTr_lat] = useState(null);
   const [tr_lng, setTr_lng] = useState(null);
+  const [userName, setUserName] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,6 +38,14 @@ const Discover = () => {
   }, []);
 
   useEffect(() => {
+
+
+    const user = auth.currentUser;
+    if (user) {
+      setUserName(user.displayName || user.email); // Use display name if available, otherwise email
+    }
+
+
     setIsLoading(true);
     getPlacesData(bl_lat, bl_lng, tr_lat, tr_lng, type).then((data) => {
       setMainData(data);
@@ -44,23 +55,47 @@ const Discover = () => {
     });
   }, [bl_lat, bl_lng, tr_lat, tr_lng, type]);
 
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful
+        navigation.replace('Login'); // Navigate to Login screen
+      })
+      .catch((error) => {
+        // An error happened
+        console.error(error);
+      });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white relative">
-      <View className="flex-row items-center justify-between px-8">
-        <View>
-          <Text className="text-[40px] text-[#0B646B] font-bold">Discover</Text>
-          <Text className="text-[#527283] text-[36px]">the beauty today</Text>
-        </View>
 
-        <View className="w-12 h-12 bg-gray-400 rounded-md items-center justify-center shadow-lg">
-          <Image
-            source={Avatar}
-            className="w-full h-full rounded-md object-cover"
-          />
-        </View>
+
+      <View className="flex-row justify-between items-center p-3"> 
+          <Text className="text-[#527283] text-[18px]">{userName}</Text>
+          <TouchableOpacity onPress={handleLogout} className="bg-red-500 px-4 py-2 rounded-md mt-2">
+            <Text className="text-white">Logout</Text>
+          </TouchableOpacity>
       </View>
 
-      <View className="flex-row items-center bg-white mx-4 rounded-xl py-1 px-4 shadow-lg mt-4">
+
+      <View className="mt-2 flex-row items-center justify-between px-6">
+        <View>
+          <Text className="text-[40px] text-[#0B646B] font-bold">Discover</Text>
+          <Text className="text-[#527283] text-[30px]">the beauty today</Text>
+        </View>
+
+        
+          <View className="w-12 h-12 bg-gray-400 rounded-md items-center justify-center shadow-lg mt-2">
+            <Image
+              source={Avatar}
+              className="w-full h-full rounded-md object-cover"
+            />
+          </View>
+
+      </View>
+
+      <View className="flex-row items-center  bg-white mx-4 rounded-xl py-1 px-4 shadow-xl mt-3 border border-gray-1 ">
         <GooglePlacesAutocomplete
           GooglePlacesDetailsQuery={{ fields: "geometry" }}
           placeholder="Search"
@@ -74,7 +109,7 @@ const Discover = () => {
             setTr_lng(details?.geometry?.viewport?.northeast?.lng);
           }}
           query={{
-            key: "YOUR_API_KEY",
+            key: "AIzaSyDmx7VGoaw6-jfcaF7mpr82xeSgzHqDMZY",
             language: "en",
           }}
         />
@@ -87,7 +122,7 @@ const Discover = () => {
         </View>
       ) : (
         <ScrollView>
-          <View className=" flex-row items-center justify-between px-8 mt-8">
+          <View className=" flex-row items-center justify-between px-5 mt-5">
             <MenuContainer
               key={"hotels"}
               title="Hotels"
@@ -119,18 +154,18 @@ const Discover = () => {
                 Top Tips
               </Text>
               <TouchableOpacity className="flex-row items-center justify-center space-x-2">
-                <Text className="text-[#A0C4C7] text-[20px] font-bold">
+                <Text className="text-[#526668] text-[20px] font-bold">
                   Explore
                 </Text>
                 <FontAwesome
                   name="long-arrow-right"
                   size={24}
-                  color="#A0C4C7"
+                  color="#526668"
                 />
               </TouchableOpacity>
             </View>
 
-            <View className="px-4 mt-8 flex-row items-center justify-evenly flex-wrap">
+            <View className="px-3 mt-6 flex-row items-center justify-evenly flex-wrap">
               {mainData?.length > 0 ? (
                 <>
                   {mainData?.map((data, i) => (
@@ -149,7 +184,7 @@ const Discover = () => {
                 </>
               ) : (
                 <>
-                  <View className="w-full h-[400px] items-center space-y-8 justify-center">
+                  <View className="w-full h-[300px] items-center space-y-8 justify-center">
                     <Image
                       source={NotFound}
                       className=" w-32 h-32 object-cover"
