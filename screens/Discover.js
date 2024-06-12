@@ -71,7 +71,7 @@ const Discover = () => {
     <SafeAreaView className="flex-1 bg-white relative">
 
 
-      <View className="flex-row justify-between items-center p-3"> 
+      <View className="flex-row justify-between items-center p-3 mt-3"> 
           <Text className="text-[#527283] text-[18px]">{userName}</Text>
           <TouchableOpacity onPress={handleLogout} className="bg-red-500 px-4 py-2 rounded-md mt-2">
             <Text className="text-white">Logout</Text>

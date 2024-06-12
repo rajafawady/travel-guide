@@ -1,30 +1,20 @@
+import React, { useLayoutEffect } from "react";
+import { SafeAreaView, ScrollView, View, Text, Image, TouchableOpacity } from "react-native";
 import { FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useLayoutEffect } from "react";
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 
-
-
 const ItemScreen = ({ route }) => {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
   const data = route?.params?.param;
-
+  const latitude = Number.isNaN(parseFloat(data?.latitude)) ? 0 : parseFloat(data?.latitude);
+  const longitude = Number.isNaN(parseFloat(data?.longitude)) ? 0 : parseFloat(data?.longitude);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
-
-
 
   return (
     <SafeAreaView className="flex-1 bg-white relative">
@@ -166,28 +156,26 @@ const ItemScreen = ({ route }) => {
           </View>
         </View>
 
-
         <View style={{ marginTop: 16, height: 200, borderRadius: 8, overflow: 'hidden' }}>
           <MapView
             style={{ flex: 1 }}
-            initialRegion={{
-              latitude: data?.latitude || 0, // Replace data?.latitude with your latitude data
-              longitude: data?.longitude || 0, // Replace data?.longitude with your longitude data
+            region={{
+              latitude: latitude || 0,
+              longitude: longitude || 0,
               latitudeDelta: 0.02,
               longitudeDelta: 0.02,
             }}
           >
             <Marker
               coordinate={{
-                latitude: data?.latitude || 0, // Replace data?.latitude with your latitude data
-                longitude: data?.longitude || 0, // Replace data?.longitude with your longitude data
+                latitude: latitude || 0,
+                longitude: longitude || 0,
               }}
               title={data?.name || 'Location'}
               description={data?.address || 'Address'}
             />
           </MapView>
         </View>
-        
 
 
 
