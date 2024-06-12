@@ -142,5 +142,3 @@ We welcome contributions to the Travel Advisor app! To contribute, follow these 
     git push origin my-feature-branch
     ```
 5. **Create a pull request.**
-
-=
